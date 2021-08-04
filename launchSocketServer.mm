@@ -11,9 +11,10 @@ using namespace std;
 void onPID(CFMachPortRef port, LMMessage *message, CFIndex size, void *info)
 {
 	void *data = LMMessageGetData(message);
-	auto str = (const char *)((const UInt8*)data ?: (const UInt8 *)&data);
-	int pid = atoi(str);
-	Socket *socket = new Socket(pid);
+	auto path = (const char *)((const UInt8*)data ?: (const UInt8 *)&data);
+//	int pid = atoi(path);
+	Socket *socket = new Socket();
+	socket->connect(path);
 	pthread_t thread;
 	pthread_create(&thread, NULL, &readFromSocket, socket);
 }

@@ -1,6 +1,4 @@
 #include "Socket.h"
-//#include <stdint.h>
-//#include <objc/runtime.h>
 #import <UIKit/UIApplication.h>
 
 void *readFromSocket(void *data)

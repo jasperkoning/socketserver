@@ -4,12 +4,9 @@ include /opt/default.mk
 
 all: p i
 
-compile = $(compile_print) && $(CXX) -I. -I../substitute/substrate -I/usr/local/include -I/opt/theos/vendor/include -fvisibility=hidden -c $< -o $@
-
-build/%.o: build/%.mm
-	$(compile)
 build/%.o: %.mm
-	$(compile)
+	$(compile_print) && $(CXX) -I. -I../substitute/substrate -I/usr/local/include -I/opt/theos/vendor/include -fvisibility=hidden -c $< -o $@
+
 build/%.o: %.c
 	$(compile_print) && clang -c $< -o $@  -I/opt/theos/vendor/include
 
