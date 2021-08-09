@@ -1,7 +1,8 @@
 #ifdef __cplusplus
+//#include "SocketServer.h"
 extern "C"
 #endif
-int socketFromServer(char const *name);
+int createSocket(char const *name, int pid);
 
 #ifdef __cplusplus
 extern "C"

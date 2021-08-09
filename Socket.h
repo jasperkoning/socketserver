@@ -14,6 +14,8 @@ public:
 
 	void connect(char const *path);
 
+	void read();
+
 	template <typename T>
 	bool receive(T *t, size_t size);
 };

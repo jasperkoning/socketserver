@@ -4,7 +4,7 @@
 
 int main()
 {
-	printf("%d", socketFromServer("jk.socket"));
+	printf("%d", createSocket("jk.socket"));
 	// onPID creates a socket /tmp/.jk.<pid> on each received PID
 	launchSocketServer("jk.socket");
 }

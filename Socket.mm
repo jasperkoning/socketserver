@@ -5,6 +5,8 @@
 #include <cstring>
 #include <cstdio>
 #include <unistd.h>
+#include <LightMessaging/LM.h>
+#include <UIKit/UIApplication.h>
 
 struct Addr_un : public sockaddr_un
 {
@@ -60,6 +62,23 @@ bool Socket::receive(T *t, size_t size)
 		else
 			return false;
 	return true;
+}
+
+void Socket::read()
+{
+	for (;;)
+	{
+		uint32_t size;
+		if (!receive(&size, sizeof(size)))
+			break;
+		char *data = new char[size + 1];
+		if (!receive(data, size))
+			break;
+		data[size] = '\0';
+		SEL sel = sel_registerName(data);
+		[[UIApplication sharedApplication] performSelectorOnMainThread:sel withObject:0 waitUntilDone:YES];
+		delete[] data;
+	}
 }
 
 template bool Socket::receive<char>(char *data, size_t size);
