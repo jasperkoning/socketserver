@@ -8,39 +8,33 @@
 #include <LightMessaging/LM.h>
 #include <UIKit/UIApplication.h>
 
-struct Addr_un : public sockaddr_un
+int Socket::accept() const
 {
-	Addr_un(char const *path)
-	{
-		memset(this, 0, sizeof(struct sockaddr_un));
-		sun_family = AF_UNIX;
-		strcpy(sun_path, path);
-	}
-};
-
-// static
-int Socket::accept(char const *path)
-{
-	Addr_un addr(path);
-	Socket s;
-	unlink(addr.sun_path);
-	bind(s._socket, (struct sockaddr *)(&addr), SUN_LEN(&addr));
-	chmod(addr.sun_path, 0777);
-	listen(s._socket, 1);
-	int client = ::accept(s._socket,0,0);
-	unlink(addr.sun_path);
+	int client = ::accept(_socket,0,0);
+	unlink(_addr.sun_path);
 	return client;
 }
 
-Socket::Socket()
+Socket::Socket(char const *path)
 :
 	_socket(socket(PF_UNIX,SOCK_STREAM,0))
-{}
-
-void Socket::connect(char const *path)
 {
-	Addr_un address(path);
-	::connect(_socket, (struct sockaddr *)(&address), SUN_LEN(&address));
+	memset(&_addr, 0, sizeof(struct sockaddr_un));
+	_addr.sun_family = AF_UNIX;
+	strcpy(_addr.sun_path, path);
+}
+
+void Socket::listen() const
+{
+	unlink(_addr.sun_path);
+	bind(_socket, reinterpret_cast<const sockaddr *>(&_addr), SUN_LEN(&_addr));
+	chmod(_addr.sun_path, 0777);
+	::listen(_socket, 1);
+}
+
+void Socket::connect() const
+{
+	::connect(_socket, reinterpret_cast<const sockaddr *>(&_addr), SUN_LEN(&_addr));
 }
 
 Socket::~Socket()
@@ -50,7 +44,7 @@ Socket::~Socket()
 
 
 template <typename T>
-bool Socket::receive(T *t, size_t size)
+bool Socket::receive(T *t, size_t size) const
 {
 	auto data = reinterpret_cast<uint8_t *>(t);
 	while (size != 0)
@@ -64,7 +58,7 @@ bool Socket::receive(T *t, size_t size)
 	return true;
 }
 
-void Socket::read()
+void Socket::read() const
 {
 	for (;;)
 	{
@@ -81,5 +75,5 @@ void Socket::read()
 	}
 }
 
-template bool Socket::receive<char>(char *data, size_t size);
-template bool Socket::receive<uint32_t>(uint32_t *data, size_t size);
+template bool Socket::receive<char>(char *data, size_t size) const;
+template bool Socket::receive<uint32_t>(uint32_t *data, size_t size) const;

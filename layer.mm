@@ -15,11 +15,12 @@ void *readFromSocket(void *data)
 // onPID creates a socket /tmp/.jk.<pid> on each received PID
 static void onPID(CFMachPortRef port, LMMessage *message, CFIndex size, void *info)
 {
+	printf("%s\n","tst");
 	void *data = LMMessageGetData(message);
 	auto path = (const char *)((const UInt8*)data ?: (const UInt8 *)&data);
 //	int pid = atoi(path);
-	Socket *socket = new Socket();
-	socket->connect(path);
+	Socket *socket = new Socket(path);
+	socket->connect();
 	pthread_t thread;
 	pthread_create(&thread, NULL, &readFromSocket, socket);
 }
@@ -37,9 +38,17 @@ int createSocket(char const *name, int pid)
 {
 	char path[30];
 	sprintf(path, "/tmp/.jk.%d", pid);
+	Socket s(path);
+	s.listen();
 	// create socket from remote server
-	jkmsgsend(name, 0x1111, path, strlen(path) + 1);
+	kern_return_t kr = jkmsgsend(name, 0x1111, path, strlen(path) + 1);
+	if (kr != 0)
+	{
+		mach_error("msgsend: ", kr);
+		return -1;
+	}
 	// create accepted socket
-	return Socket::accept(path);
+	return s.accept();
+	// return Socket::accept(path);
 }
 

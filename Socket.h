@@ -1,21 +1,25 @@
 #include <stddef.h>
 #include <sys/un.h>
 
+
 class Socket
 {
-	int _socket;
+	const int _socket;
+	sockaddr_un _addr; // could be const and initialized using lambda
 
 public:
-	static int accept(char const *path);
-
-	Socket();
+	Socket(char const *path);
 
 	~Socket();
 
-	void connect(char const *path);
+	void listen() const;
 
-	void read();
+	void connect() const;
+	
+	int accept() const;
+
+	void read() const;
 
 	template <typename T>
-	bool receive(T *t, size_t size);
+	bool receive(T *t, size_t size) const;
 };

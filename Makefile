@@ -11,7 +11,7 @@ build/%.o: %.c
 	$(compile_print) && clang -c $< -o $@  -I/opt/theos/vendor/include
 
 %/socktst: build/socket.o
-	$(link_print) && clang $< -o $@ -L$(dir $@)/../lib -lsocket
+	$(link_print) && clang $< -o $@ -L$(dir $@)/../lib -lsocket -framework CoreFoundation
 
 %/socketserver.h: socketserver.h
 	@echo $< && cp $< $@
