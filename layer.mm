@@ -18,7 +18,6 @@ static void onPID(CFMachPortRef port, LMMessage *message, CFIndex size, void *in
 	printf("%s\n","tst");
 	void *data = LMMessageGetData(message);
 	auto path = (const char *)((const UInt8*)data ?: (const UInt8 *)&data);
-//	int pid = atoi(path);
 	Socket *socket = new Socket(path);
 	socket->connect();
 	pthread_t thread;
@@ -29,6 +28,7 @@ extern "C"
 __attribute__ ((visibility("default")))
 void launchSocketServer(char const *name)
 {
+	// LMStartService only works from SpringBoard!
 	LMStartService((char *)name, CFRunLoopGetMain(), (CFMachPortCallBack)onPID);
 }
 
@@ -45,10 +45,11 @@ int createSocket(char const *name, int pid)
 	if (kr != 0)
 	{
 		mach_error("msgsend: ", kr);
+		printf("try: inject SpringBoard socket.dylib\n");
+		remove(path);
 		return -1;
 	}
-	// create accepted socket
+	// accept socket
 	return s.accept();
-	// return Socket::accept(path);
 }
 

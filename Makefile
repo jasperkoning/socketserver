@@ -10,7 +10,7 @@ build/%.o: %.mm
 build/%.o: %.c
 	$(compile_print) && clang -c $< -o $@  -I/opt/theos/vendor/include
 
-%/socktst: build/socket.o
+%/socktst: build/main.o
 	$(link_print) && clang $< -o $@ -L$(dir $@)/../lib -lsocket -framework CoreFoundation
 
 %/socketserver.h: socketserver.h
