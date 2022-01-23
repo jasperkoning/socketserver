@@ -2,13 +2,21 @@
 #include <Foundation/Foundation.h>
 #include <LightMessaging/LightMessaging.h>
 #include <LightMessaging/LM.h>
+#include <UIKit/UIApplication.h>
 #include <pthread.h>
 
-void *readFromSocket(void *data)
+static void *readFromSocket(void *arg)
 {
-	Socket *socket(reinterpret_cast<Socket *>(data));
-	socket->read();
-	delete socket;
+	auto *sock = static_cast<Socket *>(arg);
+	for (;;)
+	{
+		if (!sock->read())
+			break;
+		SEL sel =
+			sel_registerName(sock->data());
+		[[UIApplication sharedApplication] performSelectorOnMainThread:sel withObject:0 waitUntilDone:YES];
+	}
+	delete sock;
 	return NULL;
 }
 
@@ -18,10 +26,10 @@ static void onPID(CFMachPortRef port, LMMessage *message, CFIndex size, void *in
 	printf("%s\n","tst");
 	void *data = LMMessageGetData(message);
 	auto path = (const char *)((const UInt8*)data ?: (const UInt8 *)&data);
-	Socket *socket = new Socket(path);
-	socket->connect();
+	Socket *sock = new Socket(path);
+	sock->connect();
 	pthread_t thread;
-	pthread_create(&thread, NULL, &readFromSocket, socket);
+	pthread_create(&thread, NULL, &readFromSocket, sock);
 }
 
 extern "C"
@@ -38,8 +46,8 @@ int createSocket(char const *name, int pid)
 {
 	char path[30];
 	sprintf(path, "/tmp/.jk.%d", pid);
-	Socket s(path);
-	s.listen();
+	Socket sock(path);
+	sock.listen();
 	// create socket from remote server
 	kern_return_t kr = jkmsgsend(name, 0x1111, path, strlen(path) + 1);
 	if (kr != 0)
@@ -50,6 +58,6 @@ int createSocket(char const *name, int pid)
 		return -1;
 	}
 	// accept socket
-	return s.accept();
+	return sock.accept();
 }
 

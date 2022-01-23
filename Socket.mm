@@ -1,4 +1,4 @@
- #include "Socket.h"
+#include "Socket.h"
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <sys/stat.h>
@@ -10,7 +10,9 @@
 
 Socket::Socket(char const *path)
 :
-	_socket(socket(PF_UNIX,SOCK_STREAM, 0))
+	_socket(
+		socket(PF_UNIX,SOCK_STREAM, 0)),
+	_data(1, '\0')
 {
 	memset(&_addr, 0, sizeof(struct sockaddr_un));
 	_addr.sun_family = AF_UNIX;
@@ -42,21 +44,16 @@ void Socket::connect() const
 	::connect(_socket, reinterpret_cast<const sockaddr *>(&_addr), SUN_LEN(&_addr));
 }
 
-void Socket::read() const
+bool Socket::read() 
 {
-	for (;;)
-	{
-		uint32_t size;
-		if (!receive(&size, sizeof(size)))
-			break;
-		char *data = new char[size + 1];
-		if (!receive(data, size))
-			break;
-		data[size] = '\0';
-		SEL sel = sel_registerName(data);
-		[[UIApplication sharedApplication] performSelectorOnMainThread:sel withObject:0 waitUntilDone:YES];
-		delete[] data;
-	}
+	uint32_t size;
+	if (!receive(&size, sizeof(size)))
+		return false;
+	_data =
+		std::vector<char>(size + 1, '\0');
+	if (!receive(&_data[0], size))
+		return false;
+	return true;
 }
 
 template <typename T>

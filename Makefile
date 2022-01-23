@@ -1,5 +1,5 @@
 debflags = -f -debn socketserver
-contents = /usr/local/include/socketserver.h /usr/local/lib/libsocket.dylib /usr/local/bin/socktst
+contents = /usr/local/include/Socket.h /usr/local/include/socketserver.h /usr/local/lib/libsocket.dylib /usr/local/bin/socktst
 include /opt/default.mk
 
 all: p i
@@ -15,6 +15,9 @@ build/%.o: %.c
 
 %/socketserver.h: socketserver.h
 	@echo $< && cp $< $@
+#%/Socket.h: Socket.h
+#	@echo $< && cp $< $@
 
-%/libsocket.dylib: $(addprefix build/,Socket.o layer.o)
+%/libsocket.dylib: build/Socket.o build/layer.o
 	$(link_print) && $(CXX) -L/usr/lib -shared -F/System/Library/PrivateFrameworks $(addprefix -framework ,UIKit Foundation AudioToolbox AppSupport IOKit) $^ -o $@
+
