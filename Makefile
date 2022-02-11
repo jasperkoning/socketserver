@@ -4,7 +4,6 @@ include /opt/default.mk
 
 all: p i
 
-
 build/%.o: %.mm
 	$(compile_print) && $(CXX) -I. -I../substitute/substrate -I/usr/local/include -I/opt/theos/vendor/include -fvisibility=hidden -c $< -o $@
 
