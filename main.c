@@ -12,12 +12,7 @@ void onPID
 
 int main(int argc, char **argv)
 {
-	int client =
-		createSocket
-		(
-			"jk.socket",
-			getpid()
-		);
+	int client = createSocket(getpid());
 
 	if (client == -1)
 		return 1;
