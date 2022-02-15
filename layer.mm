@@ -4,6 +4,9 @@
 #include <LightMessaging/LM.h>
 #include <UIKit/UIApplication.h>
 #include <pthread.h>
+#include <inject.h>
+
+#define SERVER_NAME "jk.socket"
 
 static void *readFromSocket(void *arg)
 {
@@ -34,10 +37,10 @@ static void onPID(CFMachPortRef port, LMMessage *message, CFIndex size, void *in
 
 extern "C"
 __attribute__ ((visibility("default")))
-void launchSocketServer(char const *name)
+void launchSocketServer()
 {
 	// LMStartService only works from SpringBoard!
-	LMStartService((char *)name, CFRunLoopGetMain(), (CFMachPortCallBack)onPID);
+	LMStartService((char *)SERVER_NAME, CFRunLoopGetMain(), (CFMachPortCallBack)onPID);
 }
 
 extern "C"
@@ -49,7 +52,14 @@ int createSocket(char const *name, int pid)
 	Socket sock(path);
 	sock.listen();
 	// create socket from remote server
-	kern_return_t kr = jkmsgsend(name, 0x1111, path, strlen(path) + 1);
+	
+	// what if `name' was not started yet? 
+	// need to check if `name' exists before we can send it a message
+	// or do not supply `name' as argument and let Socket use a default name
+	// Would we ever need two socket servers? 
+	// Socket server purpose: send path and it will create connection
+	// => don't need a second server
+	kern_return_t kr = jkmsgsend(SERVER_NAME, 0x1111, path, strlen(path) + 1);
 	if (kr != 0)
 	{
 		mach_error("msgsend: ", kr);
