@@ -17,7 +17,7 @@ int main(int argc, char **argv)
 	if (client == -1)
 		return 1;
 
-	char const *msg =
+	char const *msg = argc > 1 ? argv[1] :
 		"_simulateHomeButtonPress";
 
 	uint32_t size = strlen(msg);
