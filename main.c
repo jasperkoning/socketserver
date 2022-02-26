@@ -80,7 +80,7 @@ void onPID
 	void *info
 )
 {
-	fprintf(stderr,"hi\n");
+	fprintf(stderr,"hi2\n");
 	FILE *fd = fopen("/tmp/ton", "w");
 	fprintf(fd, "hi");
 	fclose(fd);
