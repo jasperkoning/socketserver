@@ -15,8 +15,8 @@ build/%.o: %.c
 
 %/socketserver.h: socketserver.h
 	@echo $< && cp $< $@
-#%/Socket.h: Socket.h
-#	@echo $< && cp $< $@
+%/Socket.h: Socket.h
+	@echo $< && cp $< $@
 
 %/libsocket.dylib: build/Socket.o build/server.o
 	$(link_print) && $(CXX) -L/usr/lib -shared -F/System/Library/PrivateFrameworks $(addprefix -framework ,UIKit Foundation AudioToolbox AppSupport IOKit) $^ -o $@

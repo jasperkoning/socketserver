@@ -18,6 +18,10 @@ static void *readFromSocket(void *arg)
 		[[UIApplication sharedApplication] performSelectorOnMainThread:sel withObject:0 waitUntilDone:YES];
 	}
 	delete sock;
+
+	Socket sock2("/tmp/.jk2");
+//	sock2.
+
 	return NULL;
 }
 

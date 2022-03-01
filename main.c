@@ -1,6 +1,17 @@
 #include "socketserver.h"
 #include <stdio.h>
 #include <LightMessaging/LM.h>
+#include <time.h>
+#include <sys/time.h>
+#include <mach/mach_time.h>
+
+double convertMachAbsoluteTimeToMiliseconds(uint64_t mach_time)
+{
+	mach_timebase_info_data_t _clock_timebase;
+	mach_timebase_info(&_clock_timebase);
+	double nanos = (mach_time * _clock_timebase.numer) / _clock_timebase.denom;
+	return nanos / 1.0e6;
+}
 
 void onPID
 (
@@ -21,9 +32,37 @@ int main(int argc, char **argv)
 		"_simulateHomeButtonPress";
 
 	uint32_t size = strlen(msg);
+	clock_t t = clock();
+	t = clock() - t;
+	double secs = ((double)t)/CLOCKS_PER_SEC; // calculate the elapsed time
+   printf("%f ms\n", t);
+   printf("%f ms\n", secs * 1000);
+	
+
+struct timeval tv;
+
+    printf("Before gettimeofday() %ld!\n", tv.tv_sec);
+
+    int rc = gettimeofday(&tv, NULL);
+
+    printf("After gettimeofday() %ld\n", tv.tv_sec);
+	unsigned long long mat = mach_absolute_time();
 	send(client, &size, sizeof(size), 0);
 	send(client, msg, size, 0);
+sleep(1);
+	printf("%f\n", convertMachAbsoluteTimeToMiliseconds(mach_absolute_time()-mat));
+return 0;
 
+    rc = gettimeofday(&tv, NULL);
+
+    printf("After gettimeofday() %ld\n", tv.tv_sec);
+
+    if (rc == -1) {
+        printf("Error: gettimeofday() failed\n");
+        exit(1);
+    }
+
+    printf("Exiting ! %ld\n", tv.tv_sec);
 
 	if (argc == 1)
 		return 0;
