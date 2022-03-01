@@ -38,6 +38,15 @@ static void onPID(CFMachPortRef port, LMMessage *message, CFIndex size, void *in
 
 extern "C"
 __attribute__ ((visibility("default")))
+void sendToSocket(int client, char const *msg)
+{
+	uint32_t size = strlen(msg);
+	send(client, &size, sizeof(size), 0);
+	send(client, msg, size, 0);
+}
+
+extern "C"
+__attribute__ ((visibility("default")))
 void launchSocketServer()
 {
 	// LMStartService only works from SpringBoard!

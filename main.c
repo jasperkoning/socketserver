@@ -31,7 +31,6 @@ int main(int argc, char **argv)
 	char const *msg = argc > 1 ? argv[1] :
 		"_simulateHomeButtonPress";
 
-	uint32_t size = strlen(msg);
 	clock_t t = clock();
 	t = clock() - t;
 	double secs = ((double)t)/CLOCKS_PER_SEC; // calculate the elapsed time
@@ -47,8 +46,10 @@ struct timeval tv;
 
     printf("After gettimeofday() %ld\n", tv.tv_sec);
 	unsigned long long mat = mach_absolute_time();
+	uint32_t size = strlen(msg);
 	send(client, &size, sizeof(size), 0);
 	send(client, msg, size, 0);
+//	sendToSocket(client, msg);
 sleep(1);
 	printf("%f\n", convertMachAbsoluteTimeToMiliseconds(mach_absolute_time()-mat));
 return 0;
