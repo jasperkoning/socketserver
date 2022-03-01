@@ -47,11 +47,11 @@ struct timeval tv;
     printf("After gettimeofday() %ld\n", tv.tv_sec);
 	unsigned long long mat = mach_absolute_time();
 	uint32_t size = strlen(msg);
-	send(client, &size, sizeof(size), 0);
-	send(client, msg, size, 0);
-//	sendToSocket(client, msg);
-sleep(1);
-	printf("%f\n", convertMachAbsoluteTimeToMiliseconds(mach_absolute_time()-mat));
+//	send(client, &size, sizeof(size), 0);
+//	send(client, msg, size, 0);
+	sendToSocket(client, msg);
+//sleep(1);
+	printf("%f ms\n", convertMachAbsoluteTimeToMiliseconds(mach_absolute_time()-mat));
 return 0;
 
     rc = gettimeofday(&tv, NULL);

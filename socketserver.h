@@ -9,7 +9,7 @@ int createSocket(int pid);
 #ifdef __cplusplus
 extern "C"
 #endif
-int sendToSocket(int client, char const *msg);
+void sendToSocket(int client, char const *msg);
 
 #ifdef __cplusplus
 extern "C"

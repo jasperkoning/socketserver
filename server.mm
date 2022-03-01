@@ -1,4 +1,5 @@
 #include "Socket.h"
+#include "socketserver.h"
 #include <Foundation/Foundation.h>
 #include <LightMessaging/LightMessaging.h>
 #include <LightMessaging/LM.h>
