@@ -10,8 +10,11 @@ class Socket
 
 public:
 	Socket(char const *path);
+	Socket(int socket);
 
 	~Socket();
+
+	int socket() const;
 
 	void listen() const;
 
@@ -23,6 +26,8 @@ public:
 
 	char const *data() const;
 
+	void send(char const *msg) const;
+
 private:
 	template <typename T>
 	bool receive(T *t, size_t size) const;
@@ -31,4 +36,9 @@ private:
 inline char const *Socket::data() const
 {
 	return _data.data();
+}
+
+inline int Socket::socket() const
+{
+	return _socket;
 }

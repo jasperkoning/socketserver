@@ -5,7 +5,7 @@
 #include <sys/time.h>
 #include <mach/mach_time.h>
 
-double convertMachAbsoluteTimeToMiliseconds(uint64_t mach_time)
+double convertMachAbsoluteTimeToMilliseconds(uint64_t mach_time)
 {
 	mach_timebase_info_data_t _clock_timebase;
 	mach_timebase_info(&_clock_timebase);
@@ -46,12 +46,17 @@ struct timeval tv;
 
     printf("After gettimeofday() %ld\n", tv.tv_sec);
 	unsigned long long mat = mach_absolute_time();
-	uint32_t size = strlen(msg);
+//	uint32_t size = strlen(msg);
 //	send(client, &size, sizeof(size), 0);
 //	send(client, msg, size, 0);
 	sendToSocket(client, msg);
+	size_t BUFFER = 1024;
+	char output[BUFFER];
+    size_t len=recv(client, output,BUFFER, 0);
+output[1]=0;
+printf("%s\n",output);
 //sleep(1);
-	printf("%f ms\n", convertMachAbsoluteTimeToMiliseconds(mach_absolute_time()-mat));
+	printf("%f ms\n", convertMachAbsoluteTimeToMilliseconds(mach_absolute_time()-mat));
 return 0;
 
     rc = gettimeofday(&tv, NULL);

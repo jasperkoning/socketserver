@@ -11,7 +11,7 @@
 Socket::Socket(char const *path)
 :
 	_socket(
-		socket(PF_UNIX,SOCK_STREAM, 0)),
+		::socket(PF_UNIX,SOCK_STREAM, 0)),
 	_data(1, '\0')
 {
 	memset(&_addr, 0, sizeof(struct sockaddr_un));
@@ -44,7 +44,7 @@ void Socket::connect() const
 	::connect(_socket, reinterpret_cast<const sockaddr *>(&_addr), SUN_LEN(&_addr));
 }
 
-bool Socket::read() 
+bool Socket::read()
 {
 	uint32_t size;
 	if (!receive(&size, sizeof(size)))
@@ -54,6 +54,11 @@ bool Socket::read()
 	if (!receive(&_data[0], size))
 		return false;
 	return true;
+}
+
+void Socket::send(char const *msg) const
+{
+	::send(_socket, msg, strlen(msg), 0);
 }
 
 template <typename T>

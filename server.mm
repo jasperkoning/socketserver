@@ -9,6 +9,15 @@
 
 #define SERVER_NAME "jk.socket"
 
+extern "C"
+__attribute__ ((visibility("default")))
+void sendToSocket(int client, char const *msg)
+{
+	uint32_t size = strlen(msg);
+	send(client, &size, sizeof(size), 0);
+	send(client, msg, size, 0);
+}
+
 static void *readFromSocket(void *arg)
 {
 	auto *sock = static_cast<Socket *>(arg);
@@ -17,6 +26,7 @@ static void *readFromSocket(void *arg)
 		SEL sel =
 			sel_registerName(sock->data());
 		[[UIApplication sharedApplication] performSelectorOnMainThread:sel withObject:0 waitUntilDone:YES];
+		sock->send("k");
 	}
 	delete sock;
 
@@ -35,15 +45,6 @@ static void onPID(CFMachPortRef port, LMMessage *message, CFIndex size, void *in
 	sock->connect();
 	pthread_t thread;
 	pthread_create(&thread, NULL, &readFromSocket, sock);
-}
-
-extern "C"
-__attribute__ ((visibility("default")))
-void sendToSocket(int client, char const *msg)
-{
-	uint32_t size = strlen(msg);
-	send(client, &size, sizeof(size), 0);
-	send(client, msg, size, 0);
 }
 
 extern "C"
