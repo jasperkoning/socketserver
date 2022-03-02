@@ -31,44 +31,14 @@ int main(int argc, char **argv)
 	char const *msg = argc > 1 ? argv[1] :
 		"_simulateHomeButtonPress";
 
-	clock_t t = clock();
-	t = clock() - t;
-	double secs = ((double)t)/CLOCKS_PER_SEC; // calculate the elapsed time
-   printf("%f ms\n", t);
-   printf("%f ms\n", secs * 1000);
-	
-
-struct timeval tv;
-
-    printf("Before gettimeofday() %ld!\n", tv.tv_sec);
-
-    int rc = gettimeofday(&tv, NULL);
-
-    printf("After gettimeofday() %ld\n", tv.tv_sec);
 	unsigned long long mat = mach_absolute_time();
-//	uint32_t size = strlen(msg);
-//	send(client, &size, sizeof(size), 0);
-//	send(client, msg, size, 0);
 	sendToSocket(client, msg);
-	size_t BUFFER = 1024;
-	char output[BUFFER];
-    size_t len=recv(client, output,BUFFER, 0);
-output[1]=0;
-printf("%s\n",output);
-//sleep(1);
+	char output[1024];
+    size_t len = recv(client, output, 1024, 0);
 	printf("%f ms\n", convertMachAbsoluteTimeToMilliseconds(mach_absolute_time()-mat));
-return 0;
-
-    rc = gettimeofday(&tv, NULL);
-
-    printf("After gettimeofday() %ld\n", tv.tv_sec);
-
-    if (rc == -1) {
-        printf("Error: gettimeofday() failed\n");
-        exit(1);
-    }
-
-    printf("Exiting ! %ld\n", tv.tv_sec);
+	output[len]=0;
+	printf("output: %s\n",output);
+	return 0;
 
 	if (argc == 1)
 		return 0;

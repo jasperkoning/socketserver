@@ -29,10 +29,6 @@ static void *readFromSocket(void *arg)
 		sock->send("k");
 	}
 	delete sock;
-
-	Socket sock2("/tmp/.jk2");
-//	sock2.
-
 	return NULL;
 }
 

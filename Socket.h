@@ -14,8 +14,6 @@ public:
 
 	~Socket();
 
-	int socket() const;
-
 	void listen() const;
 
 	void connect() const;
@@ -36,9 +34,4 @@ private:
 inline char const *Socket::data() const
 {
 	return _data.data();
-}
-
-inline int Socket::socket() const
-{
-	return _socket;
 }
